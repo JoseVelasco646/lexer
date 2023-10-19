@@ -9,7 +9,7 @@ let currentToken = "";
 let insideString = false;
 
 for (let i = 0; i < query.length; i++) {
-  const char = query[i];
+  const char = query[i];  //char recibe las palabras de query
 
   if (insideString) {
     if (char === "'" || char === '"') {
