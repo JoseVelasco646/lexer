@@ -1,6 +1,6 @@
-const query = "DELETE * FROM usuarios  employes WHERE nombre = 'jose'";
-const palabrasIniciales = ["SELECT", "DELETE", "WHERE", "CREATE", "UPDATE", "ALTER", "INSERT", "FROM", "LIMIT", "JOIN", "ORDER BY"];
-const operadores = ["=", "!=", ">", "<", ">=", "<=", "AND", "*", "OR", "IN", "NOT IN", "LIKE"];
+const query ="SELECT * FROM usuarios WHERE nombre = 'Juan'";
+const palabrasIniciales = ["SELECT", "DELETE", "WHERE", "CREATE", "UPDATE", "ALTER", "INSERT", "FROM", "LIMIT", "JOIN", "ORDER BY", "GROUP BY"];
+const operadores = ["=", "!=", ">", "<", ">=", "<=", "AND", "OR", "IN", "NOT IN", "LIKE"];
 const delimitadores = ["(", ")", "[", "]", "{", "}", ";", ","];
 
 const tokens = [];
@@ -38,32 +38,46 @@ for (let i = 0; i < query.length; i++) {
   }
 }
 
-if (currentToken) {
-  tokens.push(currentToken);
+
+if (currentToken.trim() !== "") {
+  tokens.push(currentToken.trim().toUpperCase());
 }
 
 // Verificar si la primera palabra no es una palabra reservada
-if (tokens.length === 0 || !palabrasIniciales.includes(tokens[0].toUpperCase())) {
-  console.log("La primera palabra debe de ser una palabra reservada. No es un léxico válido.");
+if (tokens.length === 0 || !palabrasIniciales.includes(tokens[0])) {
+  console.log("La primera palabra debe ser una palabra reservada. No es un léxico válido.");
 } else {
   const clasificarPalabra = [];
 
   // Clasificar y mostrar tokens
-  for (const token of tokens) {
-    if (palabrasIniciales.includes(token.toUpperCase())) {
-      clasificarPalabra.push({ tipo: "Palabra reservada", valor: token });
-    } else if (operadores.includes(token)) {
-      clasificarPalabra.push({ tipo: "Operador", valor: token });
-    } else if (token.startsWith("'") && token.endsWith("'")) {
-      clasificarPalabra.push({ tipo: "Valor", valor: token });
-    } else if (!isNaN(Number(token))) {
-      clasificarPalabra.push({ tipo: "Valor", valor: token });
+  for (let i = 0; i < tokens.length; i++) {
+    if ((tokens[i] === "ORDER" && tokens[i + 1] === "BY") || (tokens[i] === "GROUP" && tokens[i + 1] === "BY")) {
+      clasificarPalabra.push({ tipo: "Palabra reservada", valor: `${tokens[i]} ${tokens[i + 1]}` });
+      i++; // Saltar el siguiente token ya que se ha incluido en la categoría "Palabra reservada".
+    } else if (tokens[i].includes(" ")) {
+      const palabrasSeparadas = tokens[i].split(" ");
+      for (const palabra of palabrasSeparadas) {
+        if (palabrasIniciales.includes(palabra)) {
+          clasificarPalabra.push({ tipo: "Palabra reservada", valor: palabra });
+        } else {
+          clasificarPalabra.push({ tipo: "Identificador", valor: palabra });
+        }
+      }
+    } else if (palabrasIniciales.includes(tokens[i])) {
+      clasificarPalabra.push({ tipo: "Palabra reservada", valor: tokens[i] });
+    } else if (operadores.includes(tokens[i])) {
+      clasificarPalabra.push({ tipo: "Operador", valor: tokens[i] });
+    } else if (tokens[i].startsWith("'") && tokens[i].endsWith("'")) {
+      clasificarPalabra.push({ tipo: "Valor", valor: tokens[i] });
+    } else if (!isNaN(Number(tokens[i]))) {
+      clasificarPalabra.push({ tipo: "Valor", valor: tokens[i] });
+    } else if (delimitadores.includes(tokens[i])) {
+      clasificarPalabra.push({ tipo: "Delimitador", valor: tokens[i] });
     } else {
-      clasificarPalabra.push({ tipo: "Identificador", valor: token });
+      clasificarPalabra.push({ tipo: "Identificador", valor: tokens[i] });
     }
   }
 
-  // Imprimir tokens clasificados
   for (const token of clasificarPalabra) {
     console.log(`${token.valor}: ${token.tipo}`);
   }
