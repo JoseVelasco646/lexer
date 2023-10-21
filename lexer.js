@@ -1,4 +1,4 @@
-const query ="SELECT * FROM usuarios WHERE nombre = 'Juan'";
+const query ="SELECT * FROM usuarios WHERE NOT IN nombre = 'Juan'";
 const palabrasIniciales = ["SELECT", "DELETE", "WHERE", "CREATE", "UPDATE", "ALTER", "INSERT", "FROM", "LIMIT", "JOIN", "ORDER BY", "GROUP BY"];
 const operadores = ["=", "!=", ">", "<", ">=", "<=", "AND", "OR", "IN", "*", "NOT IN", "LIKE"];
 const delimitadores = ["(", ")", "[", "]", "{", "}", ";", ","];
@@ -40,7 +40,7 @@ for (let i = 0; i < query.length; i++) {
 
 
 if (currentToken.trim() !== "") {
-  tokens.push(currentToken.trim().toUpperCase());
+  tokens.push(currentToken);
 }
 
 // Verificar si la primera palabra no es una palabra reservada
@@ -54,7 +54,11 @@ if (tokens.length === 0 || !palabrasIniciales.includes(tokens[0])) {
     if ((tokens[i] === "ORDER" && tokens[i + 1] === "BY") || (tokens[i] === "GROUP" && tokens[i + 1] === "BY")) {
       clasificarPalabra.push({ tipo: "Palabra reservada", valor: `${tokens[i]} ${tokens[i + 1]}` });
       i++; // Saltar el siguiente token ya que se ha incluido en la categoría "Palabra reservada".
-    } else if (tokens[i].includes(" ")) {
+  
+  } else if (tokens[i] === "NOT" && tokens[i + 1] === "IN") {
+    clasificarPalabra.push({ tipo: "Operador", valor: "NOT IN" });
+    i++; 
+  } else if (tokens[i].includes(" ")) {
       const palabrasSeparadas = tokens[i].split(" ");
       for (const palabra of palabrasSeparadas) {
         if (palabrasIniciales.includes(palabra)) {
