@@ -1,6 +1,6 @@
 const query ="SELECT * FROM usuarios WHERE nombre = 'Juan'";
 const palabrasIniciales = ["SELECT", "DELETE", "WHERE", "CREATE", "UPDATE", "ALTER", "INSERT", "FROM", "LIMIT", "JOIN", "ORDER BY", "GROUP BY"];
-const operadores = ["=", "!=", ">", "<", ">=", "<=", "AND", "OR", "IN", "NOT IN", "LIKE"];
+const operadores = ["=", "!=", ">", "<", ">=", "<=", "AND", "OR", "IN", "*", "NOT IN", "LIKE"];
 const delimitadores = ["(", ")", "[", "]", "{", "}", ";", ","];
 
 const tokens = [];
