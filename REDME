@@ -1,0 +1,3 @@
+Crear un lexico para analizar querys en MySQL
+El programa se encuentrae en la rama main
+EL codigo se ejecuta usando node lexer.js en la consola de linux
