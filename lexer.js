@@ -47,9 +47,9 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
 
     let currentToken = "";
     let insideString = false;
-
+/////////for para recorrer el query y asignarle el valor a la variable char, char recibe los tokens que encuentra 
     for (let i = 0; i < query.length; i++) {
-      const char = query[i]; //char recibe las palabras de query
+      const char = query[i]; 
 
       if (insideString) {
         if (char === "'" || char === '"') {
@@ -101,7 +101,7 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
           i++; // Saltar el siguiente token ya que se ha incluido en la categoría "Palabra reservada".
         } else if (tokens[i] === "NOT" && tokens[i + 1] === "IN") {
           clasificarPalabra.push({ tipo: "Operador", valor: "NOT IN" });
-          i++;
+          i++;// Saltar el siguiente token ya que se ha incluido en la categoría "operador".
         } else if (tokens[i].includes(" ")) {
           const palabrasSeparadas = tokens[i].split(" ");
           for (const palabra of palabrasSeparadas) {
@@ -155,10 +155,10 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
 
     
 
-    // Luego, puedes llamar a la función buscarPosicionToken para cada token y almacenar todas las posiciones en un solo array.
-    const posicionesTotales = [];
+    
+    const posicionesTotales = []; //array para guardar las posiciones de cada token
 
-    for (const token of tokens) {
+    for (const token of tokens) {//este bucle recorre cada elemento en el array tokens, en cada iteracion token toma el valor del elemento actual del array
       const posicionesToken = buscarPosicionToken(token);
       posicionesTotales.push(...posicionesToken); // Agrega todas las posiciones al array posicionesTotales
     }
@@ -169,13 +169,16 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
     for (const token of tokens) {
       buscarPosicionToken(token);
     }
+
+
+    ///////funcion para validar el query, de SELECT * FROM TABLA; valida los tokens haciendo un recorrido a tokenizar en busca del array 
     function validarqueryy(tokenizar) {
         for (let i = 0; i < tokenizar.length; i++) {
-          if (tokenizar[i] === 587 && tokenizar[i + 1] === 7 && tokenizar [i+2]===241) {
-            return true; // Se encontró 587 seguido de 7
+          if (tokenizar[i] === 587 && tokenizar[i + 1] === 7 && tokenizar [i+2]===241  &&tokenizar[i+4]===6) {
+            return true; 
           }
         }
-        return false; // No se encontró 587 seguido de 7
+        return false;
       }
   
       if (validarqueryy(posicionesTotales)) {
@@ -183,6 +186,7 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
       } else {
         console.log("El array es incorrecto");
       }
+     
     
     
   });
