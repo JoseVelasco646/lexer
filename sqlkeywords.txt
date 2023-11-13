@@ -745,5 +745,4 @@
 813 : "YEAR",
 814 : "YEAR_MONTH",
 815 : "ZEROFILL",
-816 : "ZONE",
-817 : "TABLA",
+816 : "ZONE"

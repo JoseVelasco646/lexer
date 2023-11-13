@@ -44,12 +44,13 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
     const delimitadores = ["(", ")", "[", "]", "{", "}", ";", ","];
 
     const tokens = [];
+    const identificadores = [];
 
     let currentToken = "";
     let insideString = false;
-/////////for para recorrer el query y asignarle el valor a la variable char, char recibe los tokens que encuentra 
+
     for (let i = 0; i < query.length; i++) {
-      const char = query[i]; 
+      const char = query[i];
 
       if (insideString) {
         if (char === "'" || char === '"') {
@@ -65,11 +66,25 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
         } else if (char === " " || char === "\t" || char === "\n") {
           if (currentToken) {
             tokens.push(currentToken);
+            if (
+              !palabrasIniciales.includes(currentToken) &&
+              !operadores.includes(currentToken) &&
+              !delimitadores.includes(currentToken)
+            ) {
+              identificadores.push(currentToken);
+            }
           }
           currentToken = "";
         } else if (operadores.includes(char) || delimitadores.includes(char)) {
           if (currentToken) {
             tokens.push(currentToken);
+            if (
+              !palabrasIniciales.includes(currentToken) &&
+              !operadores.includes(currentToken) &&
+              !delimitadores.includes(currentToken)
+            ) {
+              identificadores.push(currentToken);
+            }
           }
           currentToken = char;
         } else {
@@ -80,11 +95,20 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
 
     if (currentToken.trim() !== "") {
       tokens.push(currentToken);
+      if (
+        !palabrasIniciales.includes(currentToken) &&
+        !operadores.includes(currentToken) &&
+        !delimitadores.includes(currentToken)
+      ) {
+        identificadores.push(currentToken);
+      }
     }
 
     // Verificar si la primera palabra no es una palabra reservada
     if (tokens.length === 0 || !palabrasIniciales.includes(tokens[0])) {
-      console.log( "La primera palabra debe ser una palabra reservada. No es un léxico válido." );
+      console.log(
+        "La primera palabra debe ser una palabra reservada. No es un léxico válido."
+      );
     } else {
       const clasificarPalabra = [];
 
@@ -101,7 +125,7 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
           i++; // Saltar el siguiente token ya que se ha incluido en la categoría "Palabra reservada".
         } else if (tokens[i] === "NOT" && tokens[i + 1] === "IN") {
           clasificarPalabra.push({ tipo: "Operador", valor: "NOT IN" });
-          i++;// Saltar el siguiente token ya que se ha incluido en la categoría "operador".
+          i++; // Saltar el siguiente token ya que se ha incluido en la categoría "operador".
         } else if (tokens[i].includes(" ")) {
           const palabrasSeparadas = tokens[i].split(" ");
           for (const palabra of palabrasSeparadas) {
@@ -137,28 +161,33 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
       }
     }
 
-    const tokenizar = data2.split("\n"); 
+    // Mostrar identificadores
+
+    const tokenizar = data2.split("\n");
 
     // Función para buscar y mostrar la posición de un token en "sqlkeywords.txt"
     function buscarPosicionToken(tokenBuscado) {
       const posiciones = [];
       const token = tokenBuscado.trim();
+      let found = false;
 
       for (let i = 0; i < tokenizar.length; i++) {
         if (tokenizar[i].endsWith(`: "${token}",`)) {
           posiciones.push(i + 1);
+          found = true;
         }
+      }
+
+      if (!found) {
+        posiciones.push(999);
       }
 
       return posiciones; // Devuelve el array de posiciones
     }
 
-    
+    const posicionesTotales = []; // Array para guardar las posiciones de cada token
 
-    
-    const posicionesTotales = []; //array para guardar las posiciones de cada token
-
-    for (const token of tokens) {//este bucle recorre cada elemento en el array tokens, en cada iteracion token toma el valor del elemento actual del array
+    for (const token of tokens) {
       const posicionesToken = buscarPosicionToken(token);
       posicionesTotales.push(...posicionesToken); // Agrega todas las posiciones al array posicionesTotales
     }
@@ -170,24 +199,61 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
       buscarPosicionToken(token);
     }
 
-
-    ///////funcion para validar el query, de SELECT * FROM TABLA; valida los tokens haciendo un recorrido a tokenizar en busca del array 
+    ///////función para validar el query, de SELECT * FROM TABLA; valida los tokens haciendo un recorrido a tokenizar en busca del array
     function validarqueryy(tokenizar) {
-        for (let i = 0; i < tokenizar.length; i++) {
-          if (tokenizar[i] === 587 && tokenizar[i + 1] === 7 && tokenizar [i+2]===241  &&tokenizar[i+4]===6) {
-            return true; 
-          }
+      for (let i = 0; i < tokenizar.length; i++) {
+        if (
+          tokenizar[i] === 587 &&
+          tokenizar[i + 1] === 7 &&
+          tokenizar[i + 2] === 241 &&
+          tokenizar[i + 4] === 6
+        ) {
+          return true;
         }
-        return false;
       }
-  
-      if (validarqueryy(posicionesTotales)) {
-        console.log("El array es correcto");
-      } else {
-        console.log("El array es incorrecto");
+      return false;
+    }
+
+    if (validarqueryy(posicionesTotales)) {
+      console.log("El array es correcto");
+    } else {
+      console.log("El array es incorrecto");
+    }
+
+    var SELECT_perfecto = [
+      587, 999, 3, 999, 3, 999, 3, 999, 3, 999, 3, 999, 241, 999, 6,
+    ];
+    var tokenss = posicionesTotales;
+    var tokenizar_identificadores = identificadores;
+    var reglas = {
+      select: [587, 999, 3, 999, 3, 999, 3, 999, 3, 999, 3, 999, 241, 999, 6], // SELECT
+      from: [115, 200, 998], // FROM
+    };
+
+    function valida_select() {
+      console.log("Evaluar SELECT : " + SELECT_perfecto);
+      for (let i = 0; i < tokenss.length; i++) {
+        console.log(tokenss[i]);
+        if (tokenss[i] != SELECT_perfecto[i]) {
+          console.log("Chabal tenies un error, tio");
+          return;
+        }
       }
-     
-    
-    
+      console.log("query correcto " + query);
+    }
+
+    if (
+      tokenss[0] == reglas.select[0] &&
+      tokenss[1] == reglas.select[1] &&
+      tokenss[2] == reglas.select[2] &&
+      tokenss[3] == reglas.select[3] &&
+      tokenss[4] == reglas.select[4] &&
+      tokenss[5] == reglas.select[5]
+    ) {
+      valida_select();
+    } else {
+      console.log("Error de inicio de token " + tokenss[0]);
+      return;
+    }
   });
 });

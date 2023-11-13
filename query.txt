@@ -1,2 +1,1 @@
-SELECT * FROM TABLA ;
-
+SELECT tabla, tabla, tabla, tabla, tabla, jose  FROM Tabla;
