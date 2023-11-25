@@ -1,1 +1,1 @@
-SELECT tabla, tabla, tabla, tabla, tabla, jose  FROM Tabla;
+SELECT nombre, edad FROM tabla;
