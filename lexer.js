@@ -115,24 +115,40 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
     const tokenizar = data2.split("\n");
 
     // Función para buscar y mostrar la posición de un token en "sqlkeywords.txt"
+    
+
     function buscarPosicionToken(tokenBuscado) {
       const posiciones = [];
       const token = tokenBuscado.trim();
-      let found = false;
-
+      var logText = '';
+    
       for (let i = 0; i < tokenizar.length; i++) {
         if (tokenizar[i].endsWith(`: "${token}",`)) {
           posiciones.push(i + 1);
-          found = true;
+          logText = (`${token} = ${i + 1}`);
+          console.log(logText);
+          fs.appendFileSync('tokens.txt', logText + '\n', (err) => {
+            if (err) throw err; 
+           
+            
+        });
         }
       }
-
-      if (!found) {
+    
+      if (posiciones.length === 0) {
         posiciones.push(999);
+        logText = `${token} = ${posiciones[0]} `;
+        console.log(logText)
+        fs.appendFileSync('tokens.txt', logText + '\n');
       }
-
+    
+      
+     
+    
       return posiciones; // Devuelve el array de posiciones
     }
+   
+    
 
     const posicionesTotales = []; // Array para guardar las posiciones de cada token
 
@@ -140,47 +156,18 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
       const posicionesToken = buscarPosicionToken(token);
       posicionesTotales.push(...posicionesToken); // Agrega todas las posiciones al array posicionesTotales
     }
-    const mensaje =posicionesTotales;
-    fs.writeFile('tokens.txt', mensaje + '\n', (err) => {
-      if (err) throw err;
-      console.log("Tokens: ",posicionesTotales);
-  });
-    // Imprime el array completo con todas las posiciones
+  
 
-    // Busca y muestra la posición de cada token en "sqlkeywords.txt"
-    for (const token of tokens) {
-      buscarPosicionToken(token);
-    }
+  
 
-    ///////función para validar el query, de SELECT * FROM TABLA; valida los tokens haciendo un recorrido a tokenizar en busca del array
-    function validarqueryy(tokenizar) {
-      for (let i = 0; i < tokenizar.length; i++) {
-        if (
-          tokenizar[i] === 587 &&
-          tokenizar[i + 1] === 7 &&
-          tokenizar[i + 2] === 241 &&
-          tokenizar[i + 4] === 6
-        ) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    if (validarqueryy(posicionesTotales)) {
-      console.log("El array es correcto");
-    } else {
-      console.log("El array es incorrecto");
-    }
-
-    var SELECT_perfecto = [ 587, 7,241,999,6 ];
+    var SELECT_perfecto = [ 587, 7,241,999,6 ] || [587,999,3,999,241,999,6];
     var tokenss = posicionesTotales;
     var tokenizar_identificadores = identificadores;
     var reglas = {
       select: [587, 7,241,999,6], // SELECT
       from: [115, 200, 998], // FROM
     };
-
+    console.log("query a evaluar : "+SELECT_perfecto)
     function valida_select() {
       console.log("Evaluar SELECT : " + SELECT_perfecto);
       for (let i = 0; i < tokenss.length; i++) {
@@ -203,6 +190,7 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
     ) {
       valida_select();
     } else {
+      console.log(tokenss)
       console.log("Error de inicio de token " + tokenss[0]);
       return;
     }
