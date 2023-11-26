@@ -1,1 +1,1 @@
-SELECT * FROM tabla;
+SELECT nombre, jose FROM tabla;

@@ -156,44 +156,41 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
       const posicionesToken = buscarPosicionToken(token);
       posicionesTotales.push(...posicionesToken); // Agrega todas las posiciones al array posicionesTotales
     }
-  
-
-  
-
-    var SELECT_perfecto = [ 587, 7,241,999,6 ] || [587,999,3,999,241,999,6];
-    var tokenss = posicionesTotales;
-    var tokenizar_identificadores = identificadores;
-    var reglas = {
-      select: [587, 7,241,999,6], // SELECT
-      from: [115, 200, 998], // FROM
-    };
-    console.log("query a evaluar : "+SELECT_perfecto)
-    function valida_select() {
-      console.log("Evaluar SELECT : " + SELECT_perfecto);
-      for (let i = 0; i < tokenss.length; i++) {
-        console.log(tokenss[i]);
-        if (tokenss[i] != SELECT_perfecto[i]) {
-          console.log("Chabal tenies un error, tio");
-          return;
+    console.log("QUERY A EVALUAR: "+ posicionesTotales)
+    let indice = 0;
+    let fin=false
+    if(posicionesTotales[indice]===587){// posicion 0
+      console.log("el token 0 es: "+ posicionesTotales[indice])
+      indice++;
+      if(posicionesTotales[indice]===7 || posicionesTotales[indice]===999){ // posicion 1
+        console.log("el token 1 es : "+ posicionesTotales[indice])
+        indice++;
+        if(posicionesTotales[indice]===3 || posicionesTotales[indice]===241){ // posicion 2
+          console.log("el token 2 es: "+posicionesTotales[indice])
+          indice++
+          if (posicionesTotales[indice] === 999 || posicionesTotales[indice] === 241) { //posicion 3
+            console.log("el token 3 es: "+ posicionesTotales[indice])
+            indice++
+            if(posicionesTotales[indice]===6){
+              console.log("el ultimo valor es: "+ posicionesTotales[posicionesTotales.length-1] )
+              fin=true
+            }
+      
+          } else {
+            console.log("se esperaba un 999 o 241 despues del 3 o 999")
+          }
+        } else {
+          console.log("se esperaba un 3 o un 241 despues del 7 o 999 ")
         }
+      }else {
+        console.log("se esperaba un 999 o 3 despues del 587")
       }
-      console.log("query correcto " + query);
+    } else {
+      console.log("se esperaba un 999 en la posicion 0 ")
+    }
+    if(fin){
+      console.log("query terminado, porque el ultimo valor es 6")
     }
 
-    if (
-      tokenss[0] == reglas.select[0] &&
-      tokenss[1] == reglas.select[1] &&
-      tokenss[2] == reglas.select[2] &&
-      tokenss[3] == reglas.select[3] &&
-      tokenss[4] == reglas.select[4] &&
-      tokenss[5] == reglas.select[5]
-    ) {
-      valida_select();
-    } else {
-      console.log(tokenss)
-      console.log("Error de inicio de token " + tokenss[0]);
-      return;
-    }
-    
   });
 });
