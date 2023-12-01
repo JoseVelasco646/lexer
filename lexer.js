@@ -171,7 +171,7 @@ fs.readFile("query.txt", "utf8", (err1, data1) => {
           if (posicionesTotales[indice] === 999 || posicionesTotales[indice] === 241) { //posicion 3
             console.log("el token 3 es: "+ posicionesTotales[indice])
             indice++
-            if(posicionesTotales[indice]===6){
+            if(posicionesTotales[posicionesTotales.length-1]===6){
               console.log("el ultimo valor es: "+ posicionesTotales[posicionesTotales.length-1] )
               fin=true
             }
